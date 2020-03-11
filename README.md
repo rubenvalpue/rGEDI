@@ -469,10 +469,12 @@ dev.off()
 ```
 ![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig7.png)
 
-## Extracting GEDI full-waveform derived metrics
+## Extracting GEDI full-waveform derived metrics without adding noise to the full-waveform
 ```
-wf_amazon_metrics<-gediWFMetrics(input=wf_amazon,outRoot=getwd())
-wf_savanna_metrics<-gediWFMetrics(input=wf_savanna,outRoot=getwd())
+wf_amazon_metrics<-gediWFMetrics(input=wf_amazon,
+                                outRoot=file.path(getwd(), "amazon"))
+wf_savanna_metrics<-gediWFMetrics(input=wf_savanna,
+                                outRoot=file.path(getwd(), "savanna"))
 
 metrics<-rbind(wf_amazon_metrics,wf_savanna_metrics)
 rownames(metrics)<-c("Amazon","Savanna")
@@ -482,6 +484,33 @@ head(metrics[,1:8])
 # Amazon         0      -1e+06   133.29       -1e+06        -1   94.97     99.84      95.19
 # Savanna        0      -1e+06   831.51       -1e+06        -1  822.18    822.21     822.25
 ```
+## Extracting GEDI full-waveform derived metrics after adding noise to the full-waveform
+```
+wf_amazon_metrics_noise<-gediWFMetrics(input=wf_amazon,
+                         outRoot=file.path(getwd(), "amazon"),
+                         linkNoise= c(3.0103,0.95),
+                         maxDN= 4096,
+                         sWidth= 0.5,
+                         varScale= 3)
+
+wf_savanna_metrics_noise<-gediWFMetrics(
+                        input=wf_savanna,
+                        outRoot=file.path(getwd(), "savanna"),
+                        linkNoise= c(3.0103,0.95),
+                        maxDN= 4096,
+                        sWidth= 0.5,
+                        varScale= 3)
+
+metrics_noise<-rbind(wf_amazon_metrics_noise,wf_savanna_metrics_noise)
+rownames(metrics_noise)<-c("Amazon","Savanna")
+head(metrics_noise[,1:8])
+
+#         #wave ID true ground true top ground slope ALS cover gHeight maxGround inflGround
+# Amazon         0      -1e+06   133.29       -1e+06        -1   99.17     99.99      95.39
+# Savanna        0      -1e+06   831.36       -1e+06        -1  822.15    822.21     822.18
+
+```
+
 ## Always close gedi objects, so HDF5 files won't be blocked!
 ```{r cleanup, echo=TRUE, results="hide", error=TRUE}
 close(wf_amazon)
@@ -510,10 +539,11 @@ GEDI02_Bv001. Accessed on February 15 2020 https://lpdaac.usgs.gov/products/gedi
 GEDI Finder. Accessed on February 15 2020 https://lpdaacsvc.cr.usgs.gov/services/gedifinder
 
 # Acknowledgements
-University of Maryland and NASA Goddard Space Flight Center for developing GEDI mission
+The University of Maryland and NASA's Goddard Space Flight Center for developing GEDI mission.
 
-Brazilian National Council for Scientific and Technological Development (CNPq) for funding the project entitled "Mapping fuel load and simulation of fire behaviour and spread in the Cerrado biome using modeling and remote sensing technologies" and leaded by Prof. Dr. Carine Klauberg (carine_klauberg@hotmail.com) and
-Dr. Carlos Alberto Silva (carlos_engflorestal@outlook.com).
+Dr. Carlos Alberto Silva (carlos_engflorestal@outlook.com) was funded through the NASA’s Carbon Monitoring System project entitled "Future Mission Fusion for High Biomass Forest Carbon Accounting" (CMS, grant 15-CMS15-0055) led by Dr. Laura Duncanson (lduncans@umd.edu, Universtiy of Maryland) and Dr. Lola Fatoyinbo (lola.fatoyinbo@nasa.gov, NASA's Goddard Space Flight Center).
+
+The Brazilian National Council for Scientific and Technological Development (CNPq) for funding the project entitled "Mapping fuel load and simulation of fire behaviour and spread in the Cerrado biome using modeling and remote sensing technologies" and leaded by Prof. Dr. Carine Klauberg (carine_klauberg@hotmail.com) and Dr. Carlos Alberto Silva.
 
 # Disclaimer
 **rGEDI package has not been developted by the GEDI team. It comes with no guarantee, expressed or implied, and the authors hold no responsibility for its use or reliability of its outputs.**

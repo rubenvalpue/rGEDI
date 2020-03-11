@@ -107,7 +107,7 @@
 #'\dontshow{
 #' rm(list=ls())
 #'}
-#' 
+#'
 #'libsAvailable = require(lidR) && require(plot3D)
 #'if (libsAvailable) {
 #'
@@ -138,18 +138,38 @@
 #'                            output=file.path(getwd(),"gediWF_Savanna_simulation.h5"),
 #'                            coords = c(xcenter_Savanna, ycenter_Savanna))
 #'
-#'# Extracting GEDI full-waveform derived metrics
+#'# Extracting GEDI full-waveform derived metrics without adding noise to the full-waveform
 #'wf_amazon_metrics<-gediWFMetrics(input=wf_Amazon,outRoot=file.path(getwd(), "amazon"))
-#'wf_savanna_metrics<-gediWFMetrics(input=wf_Savanna,outRoot=file.path(getwd(), "Savanna"))
-#'
-#'close(wf_Amazon)
-#'close(wf_Savanna)
+#'wf_savanna_metrics<-gediWFMetrics(input=wf_Savanna,outRoot=file.path(getwd(), "savanna"))
 #'
 #'metrics<-rbind(wf_amazon_metrics,wf_savanna_metrics)
 #'rownames(metrics)<-c("Amazon","Savanna")
 #'head(metrics)
-#'}
 #'
+#'# Extracting GEDI full-waveform derived metrics after adding noise to the waveform
+#'wf_amazon_metrics_noise<-gediWFMetrics(input=wf_Amazon,
+#'                         outRoot=file.path(getwd(), "amazon"),
+#'                         linkNoise= c(3.0103,0.95),
+#'                         maxDN= 4096,
+#'                         sWidth= 0.5,
+#'                         varScale= 3)
+#'
+#'wf_savanna_metrics_noise<-gediWFMetrics(
+#'                        input=wf_Savanna,
+#'                        outRoot=file.path(getwd(), "savanna"),
+#'                        linkNoise= c(3.0103,0.95),
+#'                        maxDN= 4096,
+#'                        sWidth= 0.5,
+#'                        varScale= 3)
+#'
+#'close(wf_Amazon)
+#'close(wf_Savanna)
+#'
+#'metrics_noise<-rbind(wf_amazon_metrics_noise,wf_savanna_metrics_noise)
+#'rownames(metrics_noise)<-c("Amazon","Savanna")
+#'head(metrics_noise)
+#'
+#'}
 #' @useDynLib rGEDI
 #' @import methods
 #' @export
